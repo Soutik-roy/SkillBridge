@@ -4,8 +4,16 @@ from .database import engine, Base
 from .models import *  # noqa – registers all models so metadata is populated
 from .api.routes import auth, students, jobs, intelligence, quiz, courses, faculty, recruiters
 
-# Auto-create all tables (SQLite fallback or real Postgres)
+# Auto-create all tables and seed data if empty
 Base.metadata.create_all(bind=engine)
+
+try:
+    from seed import seed_data
+    seed_data()
+    from seed_lessons import seed_lessons
+    seed_lessons()
+except Exception as e:
+    print(f"Auto-seed skipped or failed: {e}")
 
 app = FastAPI(
     title="SkillBridge API",
